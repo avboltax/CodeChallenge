@@ -1,3 +1,5 @@
+(i've never worked with ruby before so i'm positive there's some stylistic and efficiency things that can be improved upon)
+
 For using the event api I created:
 
 	- Users can create Event, Person, or Invitation objects
