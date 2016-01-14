@@ -23,11 +23,14 @@ class Event
     # returns readable list of attendees (last name, first name) sorted alphabetically
     def guest_list
         guest_list = []
-        for person in attendees
-            full_name = person.last_name + ", " + person.first_name
-            guest_list << full_name
+        if @attendees
+            for person in attendees
+                full_name = person.last_name + ", " + person.first_name
+                guest_list << full_name
+            end
+            guest_list.sort_by{|guest| guest.downcase}
         end
-        guest_list.sort_by{|guest| guest.downcase}
+        guest_list
     end
 
     def verify_date date_str
@@ -44,7 +47,7 @@ class Event
 end
 
 class Person
-    attr_accessor :busy, :first_name, :last_name
+    attr_accessor :busy, :first_name, :last_name, :invites, :events, :attending
 
     def initialize(fname, lname)
         @first_name = fname
@@ -54,12 +57,35 @@ class Person
     # checks if person is busy during date specified, else attends event
     def attend_event event
         @busy ||= []
+        @attending ||= []
         if @busy.include? event.date
+            add_invite event
             return false
         else
             @busy << event.date
+            @attending << event
+            add_invite event
             return true
         end
+    end
+
+    def add_invite event
+        @invites ||= []
+        if !@invites.include? event
+            @invites << event
+        end
+        @invites
+    end
+
+    # returns readable list of events guest was invited to
+    def events 
+        events = []
+        if @invites
+            for i in @invites
+                events << i.name
+            end
+        end
+        events
     end
 
 end
@@ -70,6 +96,7 @@ class Invite
     def initialize(person, event)
         @person = person
         @event = event
+        update_attendees
     end
 
     def rsvp
@@ -85,6 +112,7 @@ class Invite
         rsvp
         if @accepted
             @event.add_attendee(@person)
+            @person.add_invite(@event)
         end
     end
 
