@@ -4,12 +4,13 @@ class Event
     def initialize(name, date)
         @name = name
         @date = verify_date(date)
+        return
     end
 
     def add_attendee person
         @attendees ||= []
         @attendees << person
-        @attendees
+        return
     end
 
     # allows for bulk inviting of people to a given event
@@ -18,6 +19,7 @@ class Event
             invitation = Invite.new(person, self)
             invitation.update_attendees
         end
+        return
     end
 
     # returns readable list of attendees (last name, first name) sorted alphabetically
@@ -52,6 +54,7 @@ class Person
     def initialize(fname, lname)
         @first_name = fname
         @last_name = lname
+        return
     end
 
     # checks if person is busy during date specified, else attends event
@@ -74,7 +77,7 @@ class Person
         if !@invites.include? event
             @invites << event
         end
-        @invites
+        return
     end
 
     # returns readable list of events guest was invited to
@@ -96,7 +99,8 @@ class Invite
     def initialize(person, event)
         @person = person
         @event = event
-        update_attendees
+        self.update_attendees
+        return
     end
 
     def rsvp
@@ -105,6 +109,7 @@ class Invite
         else
             @accepted = false
         end
+        return
     end
 
     # if person 'rsvps' yes to invite, adds person to attendee list
@@ -114,6 +119,7 @@ class Invite
             @event.add_attendee(@person)
             @person.add_invite(@event)
         end
+        return
     end
 
 end
